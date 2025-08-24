@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+*.so
+
+# Virtual environments
+.env
+.venv
+venv/
+ENV/
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# ----------------
+# Environment variables
+.env.local
+.env.*.local
+*.env
+
+*.db
+*.sqlite3
+
+# Static & media uploads
+staticfiles/
+media/
+
+*.sublime-project
+*.sublime-workspace
