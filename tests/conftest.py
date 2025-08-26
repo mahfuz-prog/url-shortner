@@ -72,3 +72,30 @@ def client(db_session):
 
     # Ensures no test state leaks into other tests.
     app.dependency_overrides.clear()
+
+
+@pytest.fixture(scope="function")
+def auth_headers(client, test_user):
+    # register user
+    from app.auth.model import RegisterUserRequest
+
+    user_data = RegisterUserRequest(
+        email=test_user.email, username=test_user.username, password="string"
+    )
+
+    response = client.post("/auth/sign-up/", json=user_data.model_dump())
+    assert response.status_code == 201
+
+    # login
+    login_response = client.post(
+        "/auth/log-in/",
+        data={
+            "username": test_user.email,
+            "password": "string",
+            "grant_type": "password",
+        },
+    )
+
+    assert login_response.status_code == 200
+    token = login_response.json()["access_token"]
+    return {"Authorization": f"Bearer {token}"}
