@@ -44,3 +44,15 @@ class UserNotFoundError(UserError):
 class InvalidPasswordError(UserError):
     def __init__(self):
         super().__init__(status_code=401, detail="Current password is incorrect")
+
+
+class UrlError(HTTPException):
+    """Base exception for url-related errors"""
+
+    pass
+
+
+class UrlNotFoundError(UrlError):
+    def __init__(self, short_code: str):
+        message = f"{short_code} corresponding long url not found"
+        super().__init__(status_code=404, detail=message)

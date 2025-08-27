@@ -3,9 +3,11 @@ from uuid import uuid4
 from datetime import datetime, timezone, timedelta
 import app.users.service as users_service
 import app.auth.service as auth_service
+import app.urls.service as urls_service
 from app.database.cache import redis_client
 from app.exceptions import AuthenticationError
 from app.users.model import ChangeUserPassword
+from app.entities.url import URL
 
 
 class TestRedisUsages:
@@ -39,3 +41,32 @@ class TestRedisUsages:
         with pytest.raises(AuthenticationError) as exc_info:
             auth_service.verify_token(token)
             assert exc_info.value == "Token invalid due to password change"
+
+    def test_urls_service_caching(self, db_session, test_url_public):
+        class UserRequest:
+            def __init__(self):
+                self.long_url = test_url_public.long_url
+
+        user_request = UserRequest()
+        response = urls_service.register_url(db_session, user_request)
+        short_code = str(response.short_code).split("/")[-1]
+
+        # Redis: short_code -> long_url
+        get_url_cache = redis_client.get(short_code)
+        assert get_url_cache == test_url_public.long_url
+
+        # Redis: clicks:short_code -> count
+        get_count_cache = redis_client.get(f"clicks:{short_code}")
+        assert get_count_cache == "0"
+
+        # mimic clicks
+        for _ in range(20):
+            urls_service.get_long_url(db_session, short_code)
+
+        get_count_cache = redis_client.get(f"clicks:{short_code}")
+        assert get_count_cache == "20"
+
+        # clicks only stored in redis
+        # corn job will ensure update clicks redis -> db
+        url = db_session.query(URL).filter(URL.short_code == short_code).first()
+        assert url.clicks == 0

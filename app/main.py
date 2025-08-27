@@ -11,11 +11,14 @@ app = FastAPI()
 otherwise the tests will fail if not connected
 """
 from .entities.user import User  # noqa: E402, F401
+from .entities.url import URL  # noqa: E402, F401
 
 Base.metadata.create_all(bind=engine)
 
 from .auth.controller import router as auth_router  # noqa: E402
 from .users.controller import router as users_router  # noqa: E402
+from .urls.controller import router as urls_router  # noqa: E402
 
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(users_router, prefix="/users", tags=["users"])
+app.include_router(urls_router, prefix="/urls", tags=["urls"])
