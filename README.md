@@ -1,8 +1,7 @@
 # FastAPI URL Shortener
 
 ## High-Level Architecture
-
-
+<img width="900" height="1251" alt="url-shortner" src="https://github.com/user-attachments/assets/146bade0-15e1-4346-88a9-16767ed17591" />
 
 ## Overview
 
@@ -49,4 +48,5 @@ REDIS_PORT=6379
 REDIS_DB=0
 SHORTCODE_EXPIRE_SECONDS=86400
 CLICKS_EXPIRE_SECONDS=86400
+
 ```
